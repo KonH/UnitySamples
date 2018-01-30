@@ -1,0 +1,8 @@
+{
+    "name": "Specific",
+    "references": [
+        "Common"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
