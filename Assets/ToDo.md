@@ -22,4 +22,4 @@
 - [x] UnityPackageManager
 
 # CSharp
-- [ ] Arrays
+- [x] Arrays
