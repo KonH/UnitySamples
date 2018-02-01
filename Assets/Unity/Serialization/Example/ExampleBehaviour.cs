@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root.
 
 using System;
-using TypeReferences;
 using UnityEngine;
+using Rotorz.Games.Reflection;
 
 namespace Example {
 
