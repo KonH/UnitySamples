@@ -21,3 +21,4 @@
 
 # CSharp
 - [x] Arrays
+- [ ] Lists
