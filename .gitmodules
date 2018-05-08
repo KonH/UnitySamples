@@ -1,0 +1,3 @@
+[submodule "Assets/UnityBenchmarkHarness"]
+	path = Assets/UnityBenchmarkHarness
+	url = https://github.com/KonH/UnityBenchmarkHarness.git
