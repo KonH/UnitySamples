@@ -5,20 +5,37 @@ using UnityBenchmarkHarness;
 public class ListBenchmarks {
 
 	[Test]
-	public void Add_Benchmark() {
-		TestAdd<List<int>>(
-			"AddToList",
+	public void Create_Benchmark() {
+		var hold = new List<int>();
+		BenchmarkRunner.Run(
+			"CreateList",
+			10,
+			(count) => {
+				var list = new List<int>(count);
+				hold = list;
+			},
 			50 * 100,
 			500 * 100,
-			50 * 100 * 100)
-			.WriteToConsole();
+			50 * 100 * 100
+		).WriteToConsole();
+
+		hold.Clear();
 	}
 
-	List<BenchmarkSummary> TestAdd<T>(string baseName, params int[] iterations) where T : IList<int>, new() {
-		return BenchmarkSummary.TestWrapper<T>(baseName, 10, (list, curIters) => {
-			for ( var i = 0; i < curIters; i++ ) {
-				list.Add(i);
-			}
-		}, iterations);
+	[Test]
+	public void Add_Benchmark() {
+		BenchmarkRunner.Run(
+			"AddToList",
+			10,
+			(count) => {
+				var list = new List<int>();
+				for ( var i = 0; i < count; i++ ) {
+					list.Add(i);
+				}
+			},
+			50 * 100,
+			500 * 100,
+			50 * 100 * 100
+		).WriteToConsole();
 	}
 }
