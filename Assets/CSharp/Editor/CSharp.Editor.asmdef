@@ -1,0 +1,12 @@
+{
+    "name": "CSharp.Editor",
+    "references": [
+        "UnityBenchmarkHarness"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

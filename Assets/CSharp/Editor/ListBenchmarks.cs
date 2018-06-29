@@ -6,6 +6,8 @@ public class ListBenchmarks {
 
 	[Test]
 	public void Create_Benchmark() {
+		// Rewrite later
+		/*
 		var hold = new List<int>();
 		BenchmarkRunner.Run(
 			"CreateList",
@@ -19,12 +21,13 @@ public class ListBenchmarks {
 			50 * 100 * 100
 		).WriteToConsole();
 
-		hold.Clear();
+		hold.Clear();*/
 	}
 
 	[Test]
 	public void Add_Benchmark() {
-		BenchmarkRunner.Run(
+		// Rewrite later
+		/*BenchmarkRunner.Run(
 			"AddToList",
 			10,
 			(count) => {
@@ -36,6 +39,6 @@ public class ListBenchmarks {
 			50 * 100,
 			500 * 100,
 			50 * 100 * 100
-		).WriteToConsole();
+		).WriteToConsole();*/
 	}
 }

@@ -119,10 +119,27 @@ public class LangThings : MonoBehaviour {
 		}
 	}
 
+	// Stackallock case
+
+	void OrdinaryArrayTest() {
+		var x = new int[10];
+		for ( var i = 0; i < x.Length; i++ ) {
+			x[i] = i;
+		}
+	}
+
+	void StackallocArrayTest() {
+		unsafe {
+			var len = 10;
+			int* x = stackalloc int[len];
+			for ( var i = 0; i < len; i++ ) {
+				x[i] = i;
+			}
+		}
+	}
+
 	void Update() {
-		var cc = new CommonClass();
-		cc.Method();
-		(cc as InterfaceA).Method();
-		(cc as InterfaceB).Method();
+		OrdinaryArrayTest();
+		StackallocArrayTest();
 	}
 }
