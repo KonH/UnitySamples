@@ -95,8 +95,34 @@ public class LangThings : MonoBehaviour {
 		}
 	}
 
+	// Interface calls case
+
+	interface InterfaceA {
+		void Method();
+	}
+
+	interface InterfaceB {
+		void Method();
+	}
+
+	class CommonClass : InterfaceA, InterfaceB {
+		public void Method() {
+			Debug.Log("Called only on CommonClass instance");
+		}
+
+		void InterfaceA.Method() {
+			Debug.Log("Called only on InterfaceA instance");
+		}
+
+		void InterfaceB.Method() {
+			Debug.Log("Called only on InterfaceB instance");
+		}
+	}
+
 	void Update() {
-		TestCustomEnumerationNonGeneric();
-		TestCustomEnumerationGeneric();
+		var cc = new CommonClass();
+		cc.Method();
+		(cc as InterfaceA).Method();
+		(cc as InterfaceB).Method();
 	}
 }
