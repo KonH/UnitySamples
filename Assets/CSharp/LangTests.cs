@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LangThings : MonoBehaviour {
+public class LangTests : MonoBehaviour {
 
 	// Partial classes case:
 	// - Class can contains method, which isn't implemented
