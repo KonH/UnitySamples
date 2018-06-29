@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class LangThings : MonoBehaviour {
 
@@ -25,8 +27,76 @@ public class LangThings : MonoBehaviour {
 		}
 	}
 
-	void Start() {
-		var a = new SplitClass();
-		a.PublicMethod();
+	struct CustomEnumIterNonGeneric /*: IEnumerator */ {
+		int _pos;
+		int[] _array;
+
+		public CustomEnumIterNonGeneric(int[] array) {
+			_pos = -1;
+			_array = array;
+		}
+
+		public object Current => _array[_pos]; // GC allocation
+
+		public bool MoveNext() {
+			_pos++;
+			return _pos < _array.Length;
+		}
+	}
+
+	// Custom enumerators case
+
+	struct CustomEnumIterGeneric /*: IEnumerator<int>*/ {
+		int _pos;
+		int[] _array;
+
+		public CustomEnumIterGeneric(int[] array) {
+			_pos = -1;
+			_array = array;
+		}
+
+		public int Current => _array[_pos]; // No GC allocation
+
+		public bool MoveNext() {
+			_pos++;
+			return _pos < _array.Length;
+		}
+	}
+
+	class CustomEnumClassNonGeneric {
+		int[] _array = { 1, 2, 3 };
+
+		// Interface implementation isn't required, only MoveNext() && Current
+		public CustomEnumIterNonGeneric /*IEnumerator*/ GetEnumerator() {
+			return new CustomEnumIterNonGeneric(_array);
+		}
+	}
+
+	class CustomEnumClassGeneric {
+		int[] _array = { 1, 2, 3 };
+
+		// Interface implementation isn't required, only MoveNext() && Current
+		public CustomEnumIterGeneric /*IEnumerator*/ GetEnumerator() {
+			return new CustomEnumIterGeneric(_array);
+		}
+	}
+
+	void TestCustomEnumerationNonGeneric() {
+		var collection = new CustomEnumClassNonGeneric();
+		foreach ( var item in collection ) {
+			Debug.Log(item);
+		}
+	}
+
+	void TestCustomEnumerationGeneric() {
+		var collection = new CustomEnumClassGeneric();
+		foreach ( var item in collection ) {
+			Debug.Log(item);
+		}
+	}
+
+	void Update() {
+		TestCustomEnumerationNonGeneric();
+		TestCustomEnumerationGeneric();
 	}
 }
