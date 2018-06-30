@@ -156,7 +156,20 @@ public class LangTests : MonoBehaviour {
 		method.Invoke(null, new object[] { "reflection invoke" });
 	}
 
+	// Casting/boxing case
+
+	void CastBoxCase() {
+		byte x = 10;
+		int y1 = x; // it is okay, implicit cast
+
+		object x2 = x;
+		// int y2 = (int)x2; // InvalidCast exception raised, it isn't actual cast, it is unboxing to given type and it allowed only to specific type 
+
+		int y3 = (byte)x2; // its is okay, correct unboxing and implicit cast
+	}
+
+
 	void Update() {
-		ConditionalTest();
+		CastBoxCase();
 	}
 }
