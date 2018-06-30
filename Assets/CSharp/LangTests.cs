@@ -138,8 +138,25 @@ public class LangTests : MonoBehaviour {
 		}
 	}
 
+	// Conditional case
+
+	[System.Diagnostics.Conditional("NOT_EXISTS_DEFINE")]
+	static void DebugMethod(string message) {
+		Debug.Log(message);
+	}
+
+	void ConditionalTest() {
+		// Method called only if conditional define is exists
+		// (removed by compiler)
+		DebugMethod("direct invoke");
+
+		// But it remains in assembly and can be called by reflection
+		var type = GetType();
+		var method = type.GetMethod("DebugMethod", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+		method.Invoke(null, new object[] { "reflection invoke" });
+	}
+
 	void Update() {
-		OrdinaryArrayTest();
-		StackallocArrayTest();
+		ConditionalTest();
 	}
 }
