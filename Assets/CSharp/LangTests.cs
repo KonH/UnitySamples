@@ -1,6 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class LangTests : MonoBehaviour {
 
@@ -121,7 +121,7 @@ public class LangTests : MonoBehaviour {
 
 	// Stackallock case
 
-	void OrdinaryArrayTest() {
+	/*void OrdinaryArrayTest() {
 		var x = new int[10];
 		for ( var i = 0; i < x.Length; i++ ) {
 			x[i] = i;
@@ -136,7 +136,7 @@ public class LangTests : MonoBehaviour {
 				x[i] = i;
 			}
 		}
-	}
+	}*/
 
 	// Conditional case
 
@@ -256,10 +256,34 @@ public class LangTests : MonoBehaviour {
 		Debug.Log(set.Contains(new WrongEqStruct() { Name = "1" }));
 	}
 
+	void StringInterning() {
+		var str1 = "123";
+		var str2 = 123.ToString();
+		Debug.Log(str1 == str2); // Equals overrided
+		Debug.Log((object)str1 == (object)str2); // But object instances are differ
+		var str11 = string.Intern(str1);
+		var str22 = string.Intern(str2);
+		Debug.Log((object)str11 == (object)str22); // Interned strings uses same instances
+
+		Profiler.BeginSample("Compare differ");
+		Compare(str1, str2);
+		Profiler.EndSample();
+
+		Profiler.BeginSample("Compare interned");
+		Compare(str11, str22);
+		Profiler.EndSample();
+	}
+	
+	bool Compare(string str1, string str2) {
+		var result = false;
+		for ( var i = 0; i < 10000000; i++ ) {
+			result = result && (str1 == str2);
+		}
+		return result;
+	}
+
+
 	void Update() {
-		DictClassTest();
-		HashSetClassTest();
-		DictStructTest();
-		HashSetStructTest();
+		StringInterning();
 	}
 }
