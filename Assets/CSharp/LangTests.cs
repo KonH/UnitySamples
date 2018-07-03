@@ -197,8 +197,69 @@ public class LangTests : MonoBehaviour {
 		WriteBits(y3);           // 00000000_00000000_00000000_00001010
 	}
 
+	// GetHashCode/Equals case
+
+	// Equals must be overrided, when GetHashCode overrided
+	// (example is insane, but very simple)
+	
+	// Equals for classes use unique instance id
+
+	class WrongEqClass {
+		public string Name;
+
+		public override int GetHashCode() {
+			return string.Empty.GetHashCode();
+		}
+	}
+
+	// bucket selected by hash_code % capacity
+	// buckets: [ 1, -1, -1 ] // All items placed to one bucket, collision happens
+	// entries: [ { key = {"1"}, value = "123", next = -1 }, { key = {"2"}, value = "321", next = 0 }, { key = null, value = null, next = -1 } ]
+	// [""] => {"1"} => {"2"} => ...
+	// But when we check contains, we pass throught all elements and call Equals on it (until we found one or next = -1)
+
+	void DictClassTest() {
+		var dict = new Dictionary<WrongEqClass, string>();
+		dict.Add(new WrongEqClass() { Name = "1" }, "123");
+		dict.Add(new WrongEqClass() { Name = "2" }, "321");
+		Debug.Log(dict.ContainsKey(new WrongEqClass() { Name = "1" }));
+	}
+
+	void HashSetClassTest() {
+		var set = new HashSet<WrongEqClass>();
+		set.Add(new WrongEqClass() { Name = "1" });
+		set.Add(new WrongEqClass() { Name = "2" });
+		Debug.Log(set.Contains(new WrongEqClass() { Name = "1" }));
+	}
+
+	// Equals for structs check it members (reflection can be used), so results differ
+
+	struct WrongEqStruct {
+		public string Name;
+
+		public override int GetHashCode() {
+			return string.Empty.GetHashCode();
+		}
+	}
+
+	void DictStructTest() {
+		var dict = new Dictionary<WrongEqStruct, string>();
+		dict.Add(new WrongEqStruct() { Name = "1" }, "123");
+		dict.Add(new WrongEqStruct() { Name = "2" }, "321");
+		Debug.Log(dict.ContainsKey(new WrongEqStruct() { Name = "1" }));
+	}
+
+	void HashSetStructTest() {
+		var set = new HashSet<WrongEqStruct>();
+		set.Add(new WrongEqStruct() { Name = "1" });
+		set.Add(new WrongEqStruct() { Name = "2" });
+		Debug.Log(set.Contains(new WrongEqStruct() { Name = "1" }));
+	}
 
 	void Update() {
-		NumsTest();
+		DictClassTest();
+		HashSetClassTest();
+		DictStructTest();
+		HashSetStructTest();
 	}
 }
