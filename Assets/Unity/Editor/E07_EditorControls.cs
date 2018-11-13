@@ -28,8 +28,8 @@ namespace UIElementsExamples
             m_root = this.GetRootVisualContainer();
             m_root.AddStyleSheetPath("styles");
 
-            AddTestControl<IntegerField, long>(new IntegerField(), (v) => v.ToString());
-            AddTestControl<IntegerField, long>(new IntegerField(), (v) => v.ToString());
+            //AddTestControl<IntegerField, long>(new IntegerField(), (v) => v.ToString());
+            //AddTestControl<IntegerField, long>(new IntegerField(), (v) => v.ToString());
             AddTestControl<DoubleField, double>(new DoubleField(), (v) => v.ToString());
             AddTestControl<DoubleField, double>(new DoubleField(), (v) => v.ToString());
             AddTestControl<TextField, string>(new TextField(), (v) => v);

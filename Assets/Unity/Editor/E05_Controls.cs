@@ -100,7 +100,7 @@ namespace UIElementsExamples
             if (!string.IsNullOrEmpty(m_TextField.text))
             {
                 m_TasksContainer.contentContainer.Add(CreateTask(m_TextField.text));
-                m_TextField.text = "";
+                //m_TextField.text = "";
 
                 // Give focus back to text field.
                 m_TextField.Focus();

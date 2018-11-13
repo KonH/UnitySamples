@@ -11,7 +11,7 @@ namespace UnityEngine.Recorder.Timeline
     /// </summary>
     [System.Serializable]
     [TrackClipType(typeof(RecorderClip))]
-    [TrackMediaType(TimelineAsset.MediaType.Script)]
+//  [TrackMediaType(TimelineAsset.MediaType.Script)]
     [TrackColor(0f, 0.53f, 0.08f)]
     public class RecorderTrack : TrackAsset
     {
