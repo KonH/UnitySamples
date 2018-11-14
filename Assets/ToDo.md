@@ -1,5 +1,5 @@
 # Unity:
-- [ ] Tests
+- [x] Tests
 - [ ] Playables
 - [x] Assembly Definitions
 - [ ] Sprites, atlases, tiles
@@ -7,11 +7,12 @@
 - [ ] Cinemachine
 - [ ] LODs
 - [ ] Timeline
-- [ ] UI Profiler
+- [x] UI Profiler
 - [ ] Asset Bundle Browser, new asset bundle API
 - [ ] Remote Settings
-- [ ] Perf Reporting Android Native Crash
+- [x] Perf Reporting Android Native Crash
 - [x] Recorder
+- [ ] New GC
 
 ## For test use:
 - [ ] UIElements
