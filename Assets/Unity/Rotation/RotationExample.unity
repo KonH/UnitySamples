@@ -403,12 +403,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 10
-  Target: {fileID: 0}
+  Target: {fileID: 2103177419}
   StartCallback:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1224376470}
-        m_MethodName: NoGimbalLock_Q
+        m_MethodName: RotateToTarget
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
