@@ -1,9 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Linq;
-using System.Reflection;
-using Microsoft.Win32;
-using Microsoft.Win32.SafeHandles;
+using CSharp;
 
 public class SystemTests : MonoBehaviour {
 	
@@ -13,38 +11,25 @@ public class SystemTests : MonoBehaviour {
 		GenerateTypesFrom(new object());
 	}
 
-	Assembly GetAssemblyFor(object obj) {
-		return obj.GetType().Assembly;
+	[ContextMenu("Other Tests")]
+	void OtherTests() {
+		ReflectionTests.FindValueUpderAttribute();
 	}
 	
 	void GenerateTypesFrom(object obj) {
-		var assembly = GetAssemblyFor(obj);
-		var root = new GameObject(assembly.FullName);
+		var tuple = ReflectionTests.GetTypesFrom(obj);
+		var rootName = tuple.Item1;
+		var typeNames = tuple.Item2;
+		var root = new GameObject(rootName);
 		root.transform.SetParent(transform);
-		var types = assembly.ExportedTypes.Where(t => t.IsPublic);
-		foreach ( var type in types ) {
-			var typeName = "unknown";
-			if ( type.IsInterface ) {
-				typeName = "interface";
-			} else if ( type.IsClass ) {
-				typeName = "class";
-			} else if ( type.IsEnum ) {
-				typeName = "enum";
-			} else if ( type.IsValueType ) {
-				typeName = "struct";
-			} else if ( type.IsPrimitive ) {
-				typeName = "primitive";
-			} else {
-				Debug.LogError(type.FullName);
-			}
-			var childName = string.Format("{0} [{1}]", type.FullName, typeName);
-			var child     = new GameObject(childName);
+		foreach ( var childName in typeNames ) {
+			var child = new GameObject(childName);
 			child.transform.SetParent(root.transform);
 		}
 	}
 
 	void FindFileFor(object obj) {
-		var assembly = GetAssemblyFor(obj);
+		var assembly = ReflectionTests.GetAssemblyFor(obj);
 		Debug.Log(assembly.Location);
 	}
 	
