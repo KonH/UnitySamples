@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading;
 using CSharp;
 
 public class SystemTests : MonoBehaviour {
@@ -13,9 +15,9 @@ public class SystemTests : MonoBehaviour {
 
 	[ContextMenu("Other Tests")]
 	void OtherTests() {
-		TupleTests();
+		GCTests();
 	}
-	
+
 	void GenerateTypesFrom(object obj) {
 		var tuple = ReflectionTests.GetTypesFrom(obj);
 		var rootName = tuple.Item1;
@@ -107,4 +109,53 @@ public class SystemTests : MonoBehaviour {
 		return ("str", 42);
 	}
 	*/
+	
+	// FormattableString
+	
+	static void FormattableStringTest() {
+		var               argument = "arg";
+		FormattableString s        = $"http://google.com/{argument}";
+		ExploreFormattableStr(s);
+	}
+
+	static void ExploreFormattableStr(FormattableString s) {
+		Debug.Log(s.ToString());
+		Debug.Log(s.Format);
+		Debug.Log(s.ArgumentCount);
+		Debug.Log(s.GetArgument(0));
+	}
+
+	// GC
+	// GC.TryStartNoGCRegion not implemented
+	// RegisterForFullGCNotification not implemented
+
+	class DisposableClass : IDisposable {
+		~DisposableClass() {
+			Debug.Log("Clear data in finalizer: " + Thread.CurrentThread.ManagedThreadId);
+			// GameObject go = new GameObject("go"); // Internal_CreateGameObject can only be called from the main thread.
+		}
+		
+		public void Dispose() {
+			Debug.Log("Clear data in dispose call: " + Thread.CurrentThread.ManagedThreadId);
+			GC.SuppressFinalize(this);
+		}
+	}
+	
+	static void GCTests() {
+		Debug.Log($"GC.MaxGeneration: {GC.MaxGeneration}");
+		
+		// Disposing (deterministic) vs finalization (non-deterministic with possible multi-threaded issues)
+		Debug.Log("Running tests in: " + Thread.CurrentThread.ManagedThreadId);
+		using ( var obj1 = new DisposableClass() ) {
+			Debug.Log(obj1);
+		}
+		CreateOtherObject();
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+	}
+
+	static void CreateOtherObject() {
+		var obj2 = new DisposableClass();
+		Debug.Log(obj2);
+	}
 }
