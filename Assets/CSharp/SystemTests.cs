@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
@@ -8,11 +9,16 @@ public class SystemTests : MonoBehaviour {
 	
 	[ContextMenu("Generate Childs")]
 	void GenerateChilds() {
+		FindFileFor(new object());
 		GenerateTypesFrom(new object());
 	}
 
+	Assembly GetAssemblyFor(object obj) {
+		return obj.GetType().Assembly;
+	}
+	
 	void GenerateTypesFrom(object obj) {
-		var assembly = obj.GetType().Assembly;
+		var assembly = GetAssemblyFor(obj);
 		var root = new GameObject(assembly.FullName);
 		root.transform.SetParent(transform);
 		var types = assembly.ExportedTypes.Where(t => t.IsPublic);
@@ -37,8 +43,13 @@ public class SystemTests : MonoBehaviour {
 		}
 	}
 
+	void FindFileFor(object obj) {
+		var assembly = GetAssemblyFor(obj);
+		Debug.Log(assembly.Location);
+	}
+	
 	void Start() {
-		SpanTest();
+		
 	}
 
 	// Notes:
