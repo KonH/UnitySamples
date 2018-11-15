@@ -13,7 +13,7 @@ public class SystemTests : MonoBehaviour {
 
 	[ContextMenu("Other Tests")]
 	void OtherTests() {
-		ReflectionTests.FindValueUpderAttribute();
+		TupleTests();
 	}
 	
 	void GenerateTypesFrom(object obj) {
@@ -32,9 +32,8 @@ public class SystemTests : MonoBehaviour {
 		var assembly = ReflectionTests.GetAssemblyFor(obj);
 		Debug.Log(assembly.Location);
 	}
-	
+
 	void Start() {
-		
 	}
 
 	// Notes:
@@ -72,4 +71,40 @@ public class SystemTests : MonoBehaviour {
 		Debug.Log(part);
 		Debug.Log(part.ToArray()[0]); // 1
 	}
+
+	// Tuple
+	
+	static void TupleTests() {
+		// GC allocations
+		
+		// Old style
+		var tuple = Calculate1();
+		Debug.Log(tuple);
+		string str;
+		int value;
+		tuple.Deconstruct(out str, out value);
+		Debug.Log(str + value.ToString());
+
+		// C# 7.0 style, not working yet
+		/*
+		var (str2, value2) = Calculate2();
+		Debug.Log(str2 + value2.ToString());
+		var tuple2 = (1, 2).ToTuple();
+		*/
+
+		// No GC allocations
+
+		var valueTuple = new ValueTuple<int, int>(30, 60);
+		Debug.Log(valueTuple);
+	}
+
+	static Tuple<string, int> Calculate1() {
+		return new Tuple<string, int>("str", 42);
+	}
+	
+	/*
+	static (string, int) Calculate2() {
+		return ("str", 42);
+	}
+	*/
 }
