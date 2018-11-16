@@ -15,7 +15,7 @@ public class SystemTests : MonoBehaviour {
 
 	[ContextMenu("Other Tests")]
 	void OtherTests() {
-		GCTests();
+		ArraySegmentTest();
 	}
 
 	void GenerateTypesFrom(object obj) {
@@ -158,4 +158,36 @@ public class SystemTests : MonoBehaviour {
 		var obj2 = new DisposableClass();
 		Debug.Log(obj2);
 	}
+	
+	// Lazy<T>
+
+	class LazyClass {
+		public LazyClass() {
+			Debug.Log("Create instance");
+		}
+
+		public LazyClass(string str) {
+			Debug.Log("Create instance with " + str);
+		}
+	}
+	
+	static Lazy<LazyClass> LazyInstance1 = new Lazy<LazyClass>();
+	static Lazy<LazyClass> LazyInstance2 = new Lazy<LazyClass>(() => new LazyClass("123"));
+	
+	static void LazyTest() {
+		Debug.Log(LazyInstance1.IsValueCreated);
+		Debug.Log(LazyInstance1.Value);
+		Debug.Log(LazyInstance2.Value);
+	}
+	
+	// ArraySegment<T>
+	// struct with unclean interface compared to Span<T>
+
+	static void ArraySegmentTest() {
+		var array = new int[] { 0, 1, 2, 3, 4 };
+		var segment = new ArraySegment<int>(array, 2, 1);
+		Debug.Log(segment.Array[segment.Offset + 0]);
+	}
+	
+	// Void: error CS0673: System.Void cannot be used from C#. Consider using `void'
 }
