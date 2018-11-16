@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Runtime.Remoting.Lifetime;
 using System.Threading;
 using CSharp;
 
@@ -11,11 +12,6 @@ public class SystemTests : MonoBehaviour {
 	void GenerateChilds() {
 		FindFileFor(new object());
 		GenerateTypesFrom(new object());
-	}
-
-	[ContextMenu("Other Tests")]
-	void OtherTests() {
-		ArraySegmentTest();
 	}
 
 	void GenerateTypesFrom(object obj) {
@@ -33,6 +29,11 @@ public class SystemTests : MonoBehaviour {
 	void FindFileFor(object obj) {
 		var assembly = ReflectionTests.GetAssemblyFor(obj);
 		Debug.Log(assembly.Location);
+	}
+	
+	[ContextMenu("Other Tests")]
+	void OtherTests() {
+		StringTest();
 	}
 
 	void Start() {
@@ -76,7 +77,7 @@ public class SystemTests : MonoBehaviour {
 
 	// Tuple
 	
-	static void TupleTests() {
+	static void TupleTest() {
 		// GC allocations
 		
 		// Old style
@@ -141,7 +142,7 @@ public class SystemTests : MonoBehaviour {
 		}
 	}
 	
-	static void GCTests() {
+	static void GCTest() {
 		Debug.Log($"GC.MaxGeneration: {GC.MaxGeneration}");
 		
 		// Disposing (deterministic) vs finalization (non-deterministic with possible multi-threaded issues)
@@ -190,4 +191,107 @@ public class SystemTests : MonoBehaviour {
 	}
 	
 	// Void: error CS0673: System.Void cannot be used from C#. Consider using `void'
+
+	static void NullableTest() {
+		Debug.Log(Nullable.GetUnderlyingType(typeof(int?))); // int32
+		Debug.Log(typeof(int?) == typeof(Nullable<int>)); // true
+		int? value = null;
+		Debug.Log(value.HasValue);
+		Debug.Log(value.Value); // InvalidOperationException
+	}
+	
+	// Activator
+
+	class PublicClass {
+	}
+	
+	class PrivateClass {
+		private PrivateClass() {}
+	}
+
+	static void ActivatorTest() {
+		Debug.Log(Activator.CreateInstance<PublicClass>());
+		Debug.Log(Activator.CreateInstance(typeof(PublicClass)));
+		// var pr = new PrivateClass(); // can't
+		// Debug.Log(Activator.CreateInstance<PrivateClass>()); // can't: MissingMethodException
+		Debug.Log(typeof(PublicClass).Assembly);
+		Debug.Log(typeof(PublicClass).FullName);
+		var handle = Activator.CreateInstance("CSharp", "SystemTests+PublicClass");
+		Debug.Log(handle.Unwrap()); // instance itself
+		var lease = handle.InitializeLifetimeService() as ILease; // using for .NET Remoting
+		Debug.Log(lease.CurrentState); // Initial
+		Debug.Log(handle.GetLifetimeService()); // null
+		//Debug.Log(handle.CreateObjRef());
+	}
+
+	// BitConverter
+	
+	static void BitConverterTest() {
+		Debug.Log(BitConverter.IsLittleEndian);
+		WriteBytes(false, true);
+		WriteBytes(char.MinValue, char.MaxValue);
+		WriteBytes(short.MinValue, short.MaxValue);
+		WriteBytes(ushort.MinValue, ushort.MaxValue);
+		WriteBytes(int.MinValue, int.MaxValue);
+		WriteBytes(uint.MinValue, uint.MaxValue);
+		WriteBytes(long.MinValue, long.MaxValue);
+		WriteBytes(ulong.MinValue, ulong.MaxValue);
+		WriteBytes(float.MinValue, float.MaxValue);
+		WriteBytes(double.MinValue, double.MaxValue);
+	}
+
+	// Can't use generics here :(
+	static void WriteBytes(bool t1, bool t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(char t1, char t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(short t1, short t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(ushort t1, ushort t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(int t1, int t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(uint t1, uint t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(long t1, long t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(ulong t1, ulong t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(double t1, double t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+	static void WriteBytes(float t1, float t2) => WriteBytes(t1, t2, BitConverter.GetBytes(t1), BitConverter.GetBytes(t2));
+
+	static void WriteBytes<T>(T min, T max, byte[] b1, byte[] b2) {
+		Debug.Log($"[{typeof(T)}] {min}-{max} => {GetBytesPart(b1)} - {GetBytesPart(b2)}");
+	}
+	
+	// Because of '\0'
+	static void WriteBytes(char min, char max, byte[] b1, byte[] b2) {
+		Debug.Log($"[{typeof(char)}] {(int)min}-{(int)max} => {GetBytesPart(b1)} - {GetBytesPart(b2)}");
+	}
+	
+	static string GetBytesPart(byte[] bytes) {
+		var str = $"[{bytes.Length}]";
+		for ( var i = 0; i < bytes.Length; i++ ) {
+			str += $" {bytes[i]} ";
+		}
+		return str;
+	}
+	
+	// String
+
+	static void StringTest() {
+		var str1 = "12345";
+		var str2 = "123\045";
+		Debug.Log(str1.Length); // 5
+		Debug.Log(str1); // 12345
+		Debug.Log(str2.Length); // 6
+		Debug.Log(str2); // 123
+		
+		var str3 = new string(new char[] { '1', '\0', '2' });
+		Debug.Log(str3.Length); // 3
+		Debug.Log(str3); // 1
+
+		unsafe {
+			var array = new char[] {'1', '\0', '2'};
+			fixed ( char* p = array ) {
+				var str4 = new string(p);
+				Debug.Log(str4.Length); // 1
+				Debug.Log(str4);        // 1
+			}
+		}
+
+		// Continue
+	}
 }
